@@ -1,5 +1,6 @@
 # pia1_backend
-Projeto 1 da disciplina de Projetos Integrados de Aplicações (API)
+Projeto 1 da disciplina de Projetos Integrados de Aplicações
+Código Back-End em Node.JS / MongoDB
 
-Link Github para o código da página HTML/JS/CSS (Front-end):  
+Link Github para o código Front-end da página HTML/JS/CSS:    
 https://github.com/lordonebr/pia1_frontend
