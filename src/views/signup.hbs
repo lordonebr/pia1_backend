@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <body>
+    <div class="m-2"> 
+      <h5>Cadastro de novo usuário</h5>
+      <div class="border rounded border-info col-md-6 my-2">
+          <form class="p-2 pb-3">
+            <div class="form-row">
+                  <label class="font-weight-bold text-uppercase" for="idNewUserFirstName">Primeiro Nome</label>
+                  <input id="idNewUserFirstName" type="text" class="form-control" required />
+            </div>
+            <div class="form-row mt-3">
+                  <label class="font-weight-bold text-uppercase" for="idNewUserLastName">Último Nome</label>
+                  <input id="idNewUserLastName" type="text" class="form-control" required />
+            </div>
+            <div class="form-row mt-3">
+                  <label class="font-weight-bold text-uppercase" for="idNewUserEmail">E-mail</label>
+                  <input id="idNewUserEmail" type="text" class="form-control" required />
+            </div>
+            <div class="form-row mt-3">
+                  <label class="font-weight-bold text-uppercase" for="idNewUserPassword">Senha</label>
+                  <input id="idNewUserPassword" type="password" class="form-control" required />
+            </div>
+            
+            <button type="submit" class="btn btn-primary float-right mt-2" onclick="clickedSignup(event)">Criar</button>
+          </form>
+            <p>
+              <span id="idErrorSignup" class="text-danger text-monospace p-1 font-weight-bold"></span>
+            </p>
+          <p>
+            <a href="#">Voltar</a>
+          </p>
+      </div>
+    </div>
+  </body>
+</html>
