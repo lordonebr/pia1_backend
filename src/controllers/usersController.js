@@ -4,7 +4,15 @@ const Transfer = require('../store/transfer');
 
 exports.get = (req, res) => {
 
-    User.find({'systemUser': false}, [], {sort:{'name': 1}}).then(lstUser => {
+    let filter = {'systemUser': false}; // padrão é não carregar os usuarios do sistema
+    if(req.query && req.query.filter){
+        let objFilter = JSON.parse(req.query.filter);
+
+        if(objFilter.hasOwnProperty("allUsers"))
+            filter = {};
+    }
+
+    User.find(filter, [], {sort:{'name': 1}}).then(lstUser => {
 
             let jsonOut = [];
             lstUser.map(user => {

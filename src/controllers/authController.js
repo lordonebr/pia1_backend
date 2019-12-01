@@ -21,7 +21,7 @@ exports.post = function(req, res, next) {
 
         const id = user._id;
         var token = jwt.sign({ id }, process.env.SECRET, {
-            expiresIn: 300 // expires in 5min
+            expiresIn: 3000 // expires in 5min
           });
           
           console.log('LOGIN REALIZADO (ID_USER: ' + user.id.toString() + ')')

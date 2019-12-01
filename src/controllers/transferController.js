@@ -2,14 +2,46 @@ const Transfer = require('../store/transfer');
 const User = require('../store/user');
 
 exports.get = (req, res) => {
+    
+    let filter = {};
+    if(req.query && req.query.filter){
+        let objFilter = JSON.parse(req.query.filter);
+        
+        let lstFilters = [];
+        if(objFilter.hasOwnProperty("idSender"))
+            lstFilters.push({idSender : objFilter["idSender"]});
 
-    Transfer.find({},[], {sort:{'date': -1}}).then(lstTransfers => {
+        if(objFilter.hasOwnProperty("idRecipient"))
+            lstFilters.push({idRecipient : objFilter["idRecipient"]});
+
+        if(objFilter.hasOwnProperty("date")){
+
+            const regExpDate = /(\d{1,2})\/(\d{1,2})\/(\d{4})/;
+            let resultExp = regExpDate.exec(objFilter["date"]);
+            if(resultExp){
+                let parseDate = new Date(resultExp[3], resultExp[2]-1, resultExp[1]);
+                let dateLimit = parseDate.getUTCFullYear() + "/" + (parseDate.getUTCMonth() + 1) + "/" + parseDate.getUTCDate();
+
+                let parseDate2 = parseDate;
+                parseDate2.setDate(parseDate2.getUTCDate() + 1);
+                let dateLimit2 = parseDate2.getUTCFullYear() + "/" + (parseDate2.getUTCMonth() + 1) + "/" + parseDate2.getUTCDate();
+
+                lstFilters.push({date : { $gte: dateLimit, $lte: dateLimit2 } });
+            }
+        }
+
+        if(lstFilters.length > 0)
+            filter = { $or: lstFilters }
+    }
+    console.log("Filtro transferências: " + JSON.stringify(filter));
+
+    Transfer.find(filter, [], {sort:{'date': -1}}).then(lstTransfers => {
         
         User.find().then(lstUsers => {
 
             let jsonOut = [];
             lstTransfers.map(trans => {
-                let {idSender, idRecipient, credit, donation, date} = trans;
+                let {idSender, idRecipient, credit, donation, date, description} = trans;
                 
                 let jsonTrans = {}; 
     
@@ -40,6 +72,8 @@ exports.get = (req, res) => {
                     jsonTrans["value"] = credit;
                 else
                     jsonTrans["value"] = donation;
+
+                jsonTrans["description"] = description;  
     
                 jsonOut.push(jsonTrans);
             })
