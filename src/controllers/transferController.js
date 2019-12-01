@@ -72,27 +72,66 @@ exports.post = (req, res, next) => {
         "idRecipient" : 2,
         "credit": 0,
         "donation": 10,
-        "description": "Primeira transação",
-        "date": "2019-11-07"
+        "description": "Primeira transação"
     }
     */
 
-    Transfer.create({
+   let msgErrorValues = undefined;
+   if(!req.body.idSender)
+       msgErrorValues = 'Erro: id do usuário que envia a transferência deve ser preenchido!';
+   if(!req.body.idRecipient)
+       msgErrorValues = 'Erro: id do usuário que recebe a transferência deve ser preenchido!';
+   if(!req.body.description)
+       msgErrorValues = 'Erro: descrição da transferência deve ser preenchido!';
+
+    let qtCredit = 0;
+    if(req.body.credit){
+        qtCredit = req.body.credit;
+        if(qtCredit !== "" && !isNaN(qtCredit)){
+            qtCredit = parseInt(qtCredit);
+            if(qtCredit < 0)
+                msgErrorValues = 'Erro: quantidade de créditos enviada deve ser um número positivo!';
+        }
+        else
+            msgErrorValues = 'Erro: quantidade de créditos enviada deve ser um número!';
+    }
+
+    let qtDonation = 0;
+    if(req.body.donation){
+        qtDonation = req.body.donation;
+        if(qtDonation !== "" && !isNaN(qtDonation)){
+            qtDonation = parseInt(qtDonation);
+            if(qtDonation < 0)
+                msgErrorValues = 'Erro: quantidade de créditos doada deve ser um número positivo!';
+        }
+        else
+            msgErrorValues = 'Erro: quantidade de créditos doada deve ser um número!';
+    }
+        
+    if(msgErrorValues)        
+    {
+        console.log(msgErrorValues);
+        return res.status(400).send({ signup: false, message: msgErrorValues });
+    }
+
+    let jsonNewTransfer = {
         idSender: req.body.idSender, 
         idRecipient: req.body.idRecipient, 
-        credit: req.body.credit, 
-        donation: req.body.donation, 
-        description: req.body.description,
-        date: req.body.date
-    })
+        credit: qtCredit, 
+        donation: qtDonation, 
+        description: req.body.description
+    };
+
+    Transfer.create(jsonNewTransfer)
     .then(() => {
-        console.log('Transferência efetuada!');
-        res.status(201).send("Transferência efetuada!");
+        let msg = 'Transferência efetuada com sucesso!';
+        console.log(msg);
+        res.status(201).send({ success: true, message: msg });
     })
-    .catch(() => {
-        console.log('Erro ao transferir!');
-        res.status(500).send("Erro ao transferir!");
-      })
-    ;
+    .catch((err) => {
+        let msgError = 'Erro ao transferir: ' + err;
+        console.log(msgError);
+        res.status(500).send({ success: false, message: msgError });
+      });
     
 };

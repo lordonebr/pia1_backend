@@ -3,7 +3,7 @@ const router = express.Router();
 const controller = require('../controllers/usersController')
 const verifyJWT = require('../auth/verifyJWT')
 
-router.get('/', controller.get)
+router.get('/', verifyJWT, controller.get)
 router.get('/:id', controller.getUser);
 router.post('/', controller.createUser);
 router.get('/:id/donations', controller.getUserDonations);
