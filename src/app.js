@@ -25,6 +25,7 @@ const usersRoute = require('./routes/usersRoute');
 const transferRoute = require('./routes/transferRoute');
 const coinsRoute = require('./routes/coinsRoute');
 const authRoute = require('./routes/authRoute');
+const awardRoute = require('./routes/awardRoute');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -34,6 +35,7 @@ app.use('/api/coins/users', usersRoute);
 app.use('/api/coins/transfers', transferRoute);
 app.use('/api/coins/', coinsRoute);
 app.use('/api/coins/auth', authRoute);
+app.use('/api/coins/awards', awardRoute);
 
 // view engine setup
 var path = require('path');

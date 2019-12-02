@@ -91,10 +91,7 @@ exports.get = (req, res) => {
         let msgError = 'Erro ao recuperar histórico de transferências: ' + err;
         console.log(msgError);
         res.status(500).send(msgError);
-      })
-    ;
-
-
+      });
 };
 
 exports.post = (req, res, next) => {
@@ -145,7 +142,7 @@ exports.post = (req, res, next) => {
     if(msgErrorValues)        
     {
         console.log(msgErrorValues);
-        return res.status(400).send({ signup: false, message: msgErrorValues });
+        return res.status(400).send({ success: false, message: msgErrorValues });
     }
 
     let jsonNewTransfer = {

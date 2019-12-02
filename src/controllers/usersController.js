@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const User = require('../store/user');
 const Transfer = require('../store/transfer');
+const Award = require('../store/award');
 
 exports.get = (req, res) => {
 
@@ -240,7 +241,96 @@ exports.getUserBalances = (req, res) => {
         let msgError = 'Erro ao recuperar lista de recebimentos do usuário ' + idUser.toString();
         console.log(msgError);
         res.status(500).send(msgError);
-      })
-    ;
+      });
 
+};
+
+exports.postAwards = (req, res) => {
+
+    let idUser = req.params.id;
+    let idUserAward = 2;
+    console.log(req.body);
+
+    let lstAwardsPick = null
+    let msgErrorValues = undefined;
+    if(Array.isArray(req.body)){
+        lstAwardsPick = req.body;
+        if(lstAwardsPick.length <= 0)
+            msgErrorValues = 'Erro: é necessário uma lista de objetos!';
+    } else
+        msgErrorValues = 'Erro: é necessário uma lista de objetos!';
+
+    if(msgErrorValues)        
+    {
+        console.log(msgErrorValues);
+        return res.status(400).send({ success: false, message: msgErrorValues });
+    }
+    
+    Award.find({}).then(lstAwards => {
+
+        Transfer.find({ $or:[ {idSender : idUser}, {idRecipient : idUser} ]}).then(lstTransfers => {
+           
+            let allReceptions = lstTransfers.filter(val => val.idRecipient == idUser).reduce((received, transfer) => 
+                {return received + transfer.donation}, 0);
+
+            let lstItemsFound = lstAwards.filter(idx => {if(lstAwardsPick.find(op=> op.id == idx.id) != null) return true});
+            let sumCostAwards = lstItemsFound.reduce((total, awardSel) => {return total + awardSel.cost}, 0);
+            console.log("allReceptions: " + allReceptions);
+            console.log("sumCostAwards: " + sumCostAwards);
+            if(sumCostAwards > allReceptions){
+                let msgError = 'Não é possível resgatar os prêmios selecionados, não existem créditos suficientes (Necessário: ' + sumCostAwards.toString() + ' / Saldo atual: ' + allReceptions.toString();
+                console.log(msgError);
+                return res.status(400).send({ success: false, message: msgError });
+            }
+            
+            let lstJsonNewTransfer = [];
+            for(let x = 0; x < lstAwardsPick.length; x++){
+
+                let awardFound = lstAwards.find(item => item.id == lstAwardsPick[x].id);
+                
+                if(awardFound){
+                    let costSel = awardFound.cost;
+                    let descriptionSel = awardFound.description;
+                    let jsonNewTransfer = {
+                        idSender: idUser, 
+                        idRecipient: idUserAward, 
+                        credit: 0, 
+                        donation: costSel, 
+                        description: descriptionSel
+                    };
+    
+                    lstJsonNewTransfer.push(jsonNewTransfer);
+                }
+            }
+            
+            if(lstItemsFound.length !== lstJsonNewTransfer.length){
+                let msgError = 'Ocorreu um erro com os prêmios requisitados, algum prêmio pode não existir mais! Carregue a página de prêmios e faça novamente o pedido!';
+                console.log(msgError);
+                return res.status(400).send({ success: false, message: msgError });
+            }
+            
+            Transfer.create(lstJsonNewTransfer)
+            .then(() => {
+                let msg = 'Parabéns, resgate realizado com sucesso!';
+                console.log(msg);
+                res.status(201).send({ success: true, message: msg });
+            })
+            .catch((err) => {
+                let msgError = 'Erro ao resgatar premiações: ' + err;
+                console.log(msgError);
+                res.status(500).send({ success: false, message: msgError });
+            });
+        })
+        .catch(() => {
+            let msgError = 'Erro ao validar premiações solicitadas para resgate: ' + err;
+            console.log(msgError);
+            res.status(500).send(msgError);
+          });
+        }
+    )
+    .catch((err) => {
+        let msgError = 'Erro ao validar premiações solicitadas para resgate: ' + err;
+        console.log(msgError);
+        res.status(500).send(msgError);
+    });
 };

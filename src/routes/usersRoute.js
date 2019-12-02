@@ -9,5 +9,6 @@ router.post('/', controller.createUser);
 router.get('/:id/donations', controller.getUserDonations);
 router.get('/:id/receptions', controller.getUserReceptions);
 router.get('/:id/balances', verifyJWT, controller.getUserBalances);
+router.post('/:id/awards', verifyJWT, controller.postAwards);
 
 module.exports = router;
