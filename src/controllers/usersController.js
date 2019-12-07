@@ -5,6 +5,8 @@ const Award = require('../store/award');
 
 exports.get = (req, res) => {
 
+    console.log("req.userId:" + req.userId)
+
     let filter = {'systemUser': false}; // padrão é não carregar os usuarios do sistema
     if(req.query && req.query.filter){
         let objFilter = JSON.parse(req.query.filter);
@@ -214,7 +216,9 @@ exports.getUserReceptions = (req, res) => {
 
 exports.getUserBalances = (req, res) => {
 
-    let idUser = req.params.id;
+    let idUser = parseInt(req.userId);
+    //let idUser = req.userId; //ERROR TEST
+    console.log('Tentativa de recuperar saldos (USER_ID: ' + idUser.toString() + ')');
 
     Transfer.find({ $or:[ {idSender : idUser}, {idRecipient : idUser} ]}).then(lst => 
         {
@@ -232,15 +236,16 @@ exports.getUserBalances = (req, res) => {
             jsonBalances.credit = allCredit - allDonations;
             jsonBalances.donations = allDonations;
             jsonBalances.receptions = allReceptions;
+            jsonBalances.success = true;
 
             console.log('Recuperado saldos (USER_ID: ' + idUser.toString() + ')');
-            res.status(200).json(jsonBalances);
+            return res.status(200).send(jsonBalances);
         }
     )
-    .catch(() => {
-        let msgError = 'Erro ao recuperar lista de recebimentos do usuário ' + idUser.toString();
+    .catch((error) => {
+        let msgError = 'Erro ao recuperar saldos: ' + error;
         console.log(msgError);
-        res.status(500).send(msgError);
+        return res.status(500).send({ success: false, message: msgError });
       });
 
 };

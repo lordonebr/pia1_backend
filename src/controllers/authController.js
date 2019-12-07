@@ -19,7 +19,7 @@ exports.post = function(req, res, next) {
             return next(err); 
         }
 
-        const id = user._id;
+        const id = user.id;
         var token = jwt.sign({ id }, process.env.SECRET, {
             expiresIn: 3000 // expires in 5min
           });

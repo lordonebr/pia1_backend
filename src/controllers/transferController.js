@@ -4,8 +4,12 @@ const User = require('../store/user');
 exports.get = (req, res) => {
     
     let filter = {};
+    let options = {sort:{'date': -1}}
     if(req.query && req.query.filter){
         let objFilter = JSON.parse(req.query.filter);
+
+        if(objFilter.hasOwnProperty("limit"))
+            options["limit"] = objFilter["limit"];
         
         let lstFilters = [];
         if(objFilter.hasOwnProperty("idSender"))
@@ -34,8 +38,8 @@ exports.get = (req, res) => {
             filter = { $or: lstFilters }
     }
     console.log("Filtro transferências: " + JSON.stringify(filter));
-
-    Transfer.find(filter, [], {sort:{'date': -1}}).then(lstTransfers => {
+    
+    Transfer.find(filter, [], options).then(lstTransfers => {
         
         User.find().then(lstUsers => {
 
@@ -46,11 +50,12 @@ exports.get = (req, res) => {
                 let jsonTrans = {}; 
     
                 let dateFormat = new Date(date);  // dateStr you get from mongodb
-                let day = dateFormat.getDate().toString();
-                let month = (dateFormat.getUTCMonth() + 1).toString(); //months from 1-12
+
+                let day = formatTwoDigits(dateFormat.getDate());
+                let month = formatTwoDigits((dateFormat.getUTCMonth() + 1)); //months from 1-12
                 let year = dateFormat.getUTCFullYear().toString();
-                let hours = dateFormat.getHours().toString();
-                let minutes = dateFormat.getMinutes().toString();
+                let hours = formatTwoDigits(dateFormat.getHours());
+                let minutes = formatTwoDigits(dateFormat.getMinutes());
     
                 jsonTrans["date"] = day + '/' + month + '/' + year + " - " + hours + ":" + minutes;
     
@@ -93,6 +98,14 @@ exports.get = (req, res) => {
         res.status(500).send(msgError);
       });
 };
+
+formatTwoDigits = (val) => {
+    val = val.toString();
+    if(val.length == 1)
+        val = '0' + val;
+
+    return val;
+}
 
 exports.post = (req, res, next) => {
 
