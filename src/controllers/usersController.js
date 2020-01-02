@@ -220,32 +220,48 @@ exports.getUserBalances = (req, res) => {
     //let idUser = req.userId; //ERROR TEST
     console.log('Tentativa de recuperar saldos (USER_ID: ' + idUser.toString() + ')');
 
-    Transfer.find({ $or:[ {idSender : idUser}, {idRecipient : idUser} ]}).then(lst => 
-        {
-            console.log(lst);
-            let allCredit = lst.reduce((credit, transfer) => 
-                {return credit + transfer.credit}, 0);
+    User.find({systemUser : true}).then(lstSystemUsers => {
+        
+        Transfer.find({ $or:[ {idSender : idUser}, {idRecipient : idUser} ]}).then(lst => {
+                console.log(lst);
 
-            let allDonations = lst.filter(val => val.idSender == idUser).reduce((donation, transfer) => 
-                {return donation + transfer.donation}, 0);
+                let allCredit = lst.filter(val => { if(lstSystemUsers.filter(user => user.id === val.idSender).length === 0) 
+                                        return false; 
+                                    else return true;})
+                                .reduce((credit, transfer) => {return credit + transfer.credit}, 0);
+    
+                let allDonations = lst.filter(val => val.idSender == idUser).reduce((donation, transfer) => 
+                    {return donation + transfer.donation}, 0);
 
-            let allReceptions = lst.filter(val => val.idRecipient == idUser).reduce((received, transfer) => 
-                {return received + transfer.donation}, 0);
+                let allAwards = lst.filter(val => { if(lstSystemUsers.filter(user => user.id === val.idRecipient).length === 0) 
+                                                return false; 
+                                            else return true;})
+                                .reduce((award, transfer) => {return award + transfer.donation}, 0);
+    
+                let allReceptions = lst.filter(val => val.idRecipient == idUser).reduce((received, transfer) => 
+                    {return received + transfer.donation}, 0);
+    
+                let jsonBalances = {};
+                jsonBalances.credit = allCredit - allDonations + allAwards;
+                jsonBalances.donations = allDonations + allAwards;
+                jsonBalances.receptions = allReceptions - allAwards;
+                jsonBalances.success = true;
+                
+                console.log('Recuperado saldos (USER_ID: ' + idUser.toString() + ')');
+                return res.status(200).send(jsonBalances);
+            }
+        )
+        .catch((error) => {
+            let msgError = 'Erro ao recuperar saldos: ' + error;
+            console.log(msgError);
+            return res.status(500).send({ success: false, message: msgError });
+          });
 
-            let jsonBalances = {};
-            jsonBalances.credit = allCredit - allDonations;
-            jsonBalances.donations = allDonations;
-            jsonBalances.receptions = allReceptions;
-            jsonBalances.success = true;
-
-            console.log('Recuperado saldos (USER_ID: ' + idUser.toString() + ')');
-            return res.status(200).send(jsonBalances);
-        }
-    )
+    })
     .catch((error) => {
-        let msgError = 'Erro ao recuperar saldos: ' + error;
+        let msgError = 'Erro ao recuperar usuários do sistema ' + error;
         console.log(msgError);
-        return res.status(500).send({ success: false, message: msgError });
+        res.status(500).send(msgError);
       });
 
 };
