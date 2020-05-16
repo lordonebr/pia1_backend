@@ -20,7 +20,6 @@ app.options('*', cors());
 //app.use(allowCrossDomain);
 
 //Rotas
-const index = require('./routes/index');
 const usersRoute = require('./routes/usersRoute');
 const transferRoute = require('./routes/transferRoute');
 const coinsRoute = require('./routes/coinsRoute');
@@ -30,7 +29,6 @@ const awardRoute = require('./routes/awardRoute');
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use('/api/', index);
 app.use('/api/coins/users', usersRoute);
 app.use('/api/coins/transfers', transferRoute);
 app.use('/api/coins/', coinsRoute);
