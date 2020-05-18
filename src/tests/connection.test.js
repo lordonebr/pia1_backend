@@ -14,8 +14,8 @@ const res = {
     }
 }
 
-describe('API Route', function() {
-    describe('get() function', function() {
+describe('API Routes', function() {
+    describe('Version Test', function() {
         it('should return object with title and version', function() {
             get(req, res);
             expect(res.jsonCalledWith).to.have.all.keys('title', 'version');

@@ -7,7 +7,7 @@ const verifyJWT = require('../auth/verifyJWT')
 router.get('/balances', verifyJWT, controller.getUserBalances);
 
 router.get('/', verifyJWT, controller.get)
-router.get('/:id', controller.getUser);
+router.get('/:id', verifyJWT, controller.getUser);
 router.post('/', controller.createUser);
 router.get('/:id/donations', controller.getUserDonations);
 router.get('/:id/receptions', controller.getUserReceptions);
