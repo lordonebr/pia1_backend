@@ -42,14 +42,14 @@ exports.get = (req, res) => {
     Transfer.find(filter, [], options).then(lstTransfers => {
         
         User.find().then(lstUsers => {
-
             let jsonOut = [];
             lstTransfers.map(trans => {
                 let {idSender, idRecipient, credit, donation, date, description} = trans;
                 
                 let jsonTrans = {}; 
     
-                let dateFormat = new Date(date);  // dateStr you get from mongodb
+                let dateBD = new Date(date);  // dateStr you get from mongodb
+                let dateFormat = new Date(dateBD.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
 
                 let day = formatTwoDigits(dateFormat.getDate());
                 let month = formatTwoDigits((dateFormat.getUTCMonth() + 1)); //months from 1-12
