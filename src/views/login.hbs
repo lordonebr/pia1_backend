@@ -1,27 +1,28 @@
 <!doctype html>
 <html>
   <body>
-    <div class="m-2"> 
-      <h5>Atenção: Para acessar o sistema, por favor faça o login abaixo</h5>
-      <div class="border rounded border-info col-md-6 my-2">
+    <div class="m-2 textColorDefaultDark"> 
+      <h5 class="mt-3 ml-1 mb-1 font-weight-bold">Realize o login, para acessar o sistema</h5>
+      <div class="borderSpecial col-md-6 my-2">
           <form class="p-2">
             <div class="form-row">
-                  <label class="font-weight-bold text-uppercase" for="idEmail">E-mail</label>
+                  <label class="font-weight-bold text-uppercase font-weight-bold " for="idEmail">E-mail</label>
                   <input id="idEmail" type="text" class="form-control" required />
             </div>
             <div class="form-row mt-3">
-                  <label class="font-weight-bold text-uppercase" for="idUserPassword">Senha</label>
+                  <label class="font-weight-bold text-uppercase font-weight-bold " for="idUserPassword">Senha</label>
                   <input id="idUserPassword" type="password" class="form-control" required />
             </div>
             
-            <button type="submit" class="btn btn-primary float-right mt-3" onclick="clickedLogin(event)">Login</button>
+            <button type="submit" class="btn colorDefaultDark font-weight-bold float-right mt-3" onclick="clickedLogin(event)">Login</button>
           </form>
             <p>
               <span id="idMsgLogin" class="text-success text-monospace p-1 font-weight-bold divOff"></span>
               <span id="idErrorLogin" class="text-danger text-monospace p-1 font-weight-bold">{{message}}</span>
             </p>
           <p>
-            <a href="/users/forgot">Esqueceu sua senha?</a> | <a href="#" onclick='clickedLoadCreateUser(event)'>Não possui cadastro?</a>
+            <!--a class="textColorDefaultDark font-weight-bold" href="/users/forgot">Esqueceu sua senha?</a> | <a class="textColorDefaultDark font-weight-bold " href="#" onclick='clickedLoadCreateUser(event)'>Não possui cadastro?</a-->
+            <a class="textColorDefaultDark font-weight-bold " href="#" onclick='clickedLoadCreateUser(event)'>Não possui cadastro?</a>
           </p>
       </div>
     </div>
